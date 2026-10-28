@@ -224,8 +224,6 @@ function paginaProgetti() {
     mostra();
 }
 
-/* ---------- Pagina della board (board.html) ---------- */
-
 function paginaBoard() {
     const id = new URLSearchParams(window.location.search).get("id");
     const progetti = leggiProgetti();
@@ -245,8 +243,6 @@ function paginaBoard() {
     const formPartecipante = document.getElementById("form-partecipante");
     const campoCerca = document.getElementById("cerca");
     const filtroPersona = document.getElementById("filtro-persona");
-
-    // L'attività che si sta modificando, oppure null se se ne crea una nuova
     let attivitaInModifica = null;
 
     riempiSelect(sceltaProfessionista, professioni, "Seleziona...");
@@ -261,8 +257,6 @@ function paginaBoard() {
             return a.id == idAttivita;
         });
     }
-
-    /* --- Intestazione: nome, modifica ed eliminazione del progetto --- */
 
     function mostraIntestazione() {
         document.title = progetto.nome + " - Kanban Board";
@@ -296,8 +290,6 @@ function paginaBoard() {
         window.location.href = "index.html";
     });
 
-    /* --- Partecipanti --- */
-
     function mostraPartecipanti() {
         mostraChips(document.getElementById("partecipanti-progetto"), progetto.partecipanti, rimuoviPartecipante);
 
@@ -308,7 +300,6 @@ function paginaBoard() {
         riempiSelect(sceltaPersona, nomi,
             nomi.length ? "Seleziona..." : "Nessun partecipante: aggiungili in alto");
 
-        // Ricostruisco il filtro mantenendo la persona scelta, se esiste ancora
         const filtroAttuale = filtroPersona.value;
         riempiSelect(filtroPersona, nomi, "Tutte le persone");
         filtroPersona.value = nomi.includes(filtroAttuale) ? filtroAttuale : "";
@@ -352,7 +343,6 @@ function paginaBoard() {
         formPartecipante.reset();
     });
 
-    // Scegliendo una persona, propongo il suo ruolo come tipo di professionista
     sceltaPersona.addEventListener("change", function () {
         const partecipante = progetto.partecipanti.find(function (p) {
             return p.nome === sceltaPersona.value;
@@ -362,9 +352,6 @@ function paginaBoard() {
         }
     });
 
-    /* --- Finestra per creare o modificare un'attività --- */
-
-    // Suggerisce le categorie già usate nel progetto
     function aggiornaCategorie() {
         const elenco = document.getElementById("elenco-categorie");
         elenco.innerHTML = "";
@@ -438,12 +425,8 @@ function paginaBoard() {
         mostra();
     });
 
-    /* --- Ricerca e filtro --- */
-
     campoCerca.addEventListener("input", mostra);
     filtroPersona.addEventListener("change", mostra);
-
-    /* --- Trascinamento delle card --- */
 
     document.querySelectorAll(".lista").forEach(function (lista) {
         lista.addEventListener("dragover", function (e) {
@@ -455,16 +438,13 @@ function paginaBoard() {
             const attivita = trova(e.dataTransfer.getData("text/plain"));
             const cardSotto = e.target.closest(".card");
 
-            // Card lasciata su sé stessa: non cambia nulla
             if (!attivita || (cardSotto && cardSotto.dataset.id == attivita.id)) {
                 return;
             }
 
-            // Tolgo l'attività dalla sua posizione...
             progetto.attivita.splice(progetto.attivita.indexOf(attivita), 1);
             attivita.stato = lista.parentElement.id;
 
-            // ...e la rimetto prima della card su cui è stata lasciata, oppure in fondo
             if (cardSotto) {
                 const posizione = progetto.attivita.indexOf(trova(cardSotto.dataset.id));
                 progetto.attivita.splice(posizione, 0, attivita);
@@ -485,8 +465,6 @@ function paginaBoard() {
             mostra();
         }
     }
-
-    /* --- Card delle attività --- */
 
     function creaPulsante(testo, classe, azione) {
         const pulsante = document.createElement("button");
@@ -541,7 +519,7 @@ function paginaBoard() {
                 voce.className = "testo-scaduto";
             }
         }
-        // L'id è il momento di creazione (Date.now()), quindi lo uso come data
+        
         aggiungiDettaglio("Creata il " + new Date(attivita.id).toLocaleDateString("it-IT"));
 
         const azioni = card.querySelector(".azioni");
@@ -584,14 +562,10 @@ function paginaBoard() {
         return card;
     }
 
-    /* --- Riepilogo delle ore per persona --- */
-
     function mostraRiepilogo() {
         const corpo = document.querySelector("#riepilogo tbody");
         corpo.innerHTML = "";
 
-        // Tutti i partecipanti, più eventuali nomi presenti solo nelle attività
-        // (compreso "" per le attività senza assegnatario)
         const persone = progetto.partecipanti.map(function (p) {
             return p.nome;
         });
@@ -618,8 +592,6 @@ function paginaBoard() {
 
         document.getElementById("riepilogo").hidden = persone.length === 0;
     }
-
-    /* --- Disegno della board --- */
 
     function mostra() {
         const testo = campoCerca.value.trim().toLowerCase();
