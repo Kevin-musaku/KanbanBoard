@@ -2,77 +2,322 @@
     box-sizing: border-box;
 }
 
+:root {
+    --sfondo: #f4f6fa;
+    --superficie: #ffffff;
+    --colonna: #e9edf3;
+    --bordo: #d9dee7;
+    --testo: #1f2733;
+    --testo-tenue: #5f6b7a;
+    --primario: #3b6fd8;
+    --primario-scuro: #2c56ad;
+    --pericolo: #d64545;
+    --pericolo-scuro: #a83232;
+    --todo: #8a94a6;
+    --doing: #e0a526;
+    --done: #3aa66b;
+    --accento-tenue: #e6eefc;
+    --scaduto: #d64545;
+    --ombra: 0 1px 2px rgba(20, 30, 50, 0.06), 0 2px 6px rgba(20, 30, 50, 0.06);
+}
+
+/* Tema scuro: cambiano solo i colori, il resto dello stile resta uguale */
+html[data-tema="scuro"] {
+    --sfondo: #14181f;
+    --superficie: #1e242d;
+    --colonna: #262d38;
+    --bordo: #353e4b;
+    --testo: #e4e8ee;
+    --testo-tenue: #9aa5b4;
+    --primario: #5b8df0;
+    --primario-scuro: #8fb0f5;
+    --accento-tenue: #24324d;
+    --scaduto: #f07070;
+    --ombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+}
+
+html[data-tema="scuro"] button:not(.secondario):not(.elimina):not(.rimuovi) {
+    color: #10141a;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background-color: var(--sfondo);
+    color: var(--testo);
     margin: 0;
-    padding: 20px;
+    padding: 24px 20px 40px;
+    line-height: 1.45;
+}
+
+h1, h2, h3 {
+    line-height: 1.2;
 }
 
 header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-#nuova-attivita {
-    background-color: white;
-    max-width: 500px;
-    margin: 0 auto 20px auto;
-    padding: 15px;
-    border: 1px solid #ccc;
+header h1 {
+    margin: 0 0 4px;
+    font-size: 28px;
+}
+
+.sottotitolo {
+    margin: 0;
+    color: var(--testo-tenue);
+}
+
+/* --- Form e controlli --- */
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--testo-tenue);
+    margin-top: 6px;
+}
+
+input, select, textarea {
+    padding: 8px 10px;
+    border: 1px solid var(--bordo);
     border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    background-color: var(--superficie);
+    color: inherit;
 }
 
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primario);
+    box-shadow: 0 0 0 3px rgba(59, 111, 216, 0.15);
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--primario);
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+button:hover {
+    background-color: var(--primario-scuro);
+}
+
+button.secondario {
+    background-color: var(--colonna);
+    color: var(--testo);
+}
+
+button.secondario:hover {
+    background-color: var(--bordo);
+}
+
+.pannello {
+    background-color: var(--superficie);
+    max-width: 520px;
+    margin: 0 auto 28px auto;
+    padding: 20px;
+    border: 1px solid var(--bordo);
+    border-radius: 10px;
+    box-shadow: var(--ombra);
+}
+
+.pannello h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+}
+
+#form-progetto,
 #form-nuova {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-input, select, textarea {
-    padding: 6px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    font-family: inherit;
+#form-progetto button[type="submit"] {
+    margin-top: 12px;
 }
 
-button {
-    padding: 6px 10px;
-    border: none;
-    border-radius: 4px;
-    background-color: #3b7dd8;
-    color: white;
-    cursor: pointer;
+.riga-input {
+    display: flex;
+    gap: 6px;
 }
 
-button:hover {
-    background-color: #2a5fa8;
+.riga-input input {
+    flex: 1;
+    min-width: 0;
+}
+
+/* --- Chip dei partecipanti --- */
+
+.chips {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chips:empty {
+    display: none;
+}
+
+.chips li {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: var(--accento-tenue);
+    color: var(--primario-scuro);
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+.chips .rimuovi {
+    background: none;
+    color: inherit;
+    padding: 0 2px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.chips .rimuovi:hover {
+    background: none;
+    color: var(--pericolo);
+}
+
+/* --- Elenco progetti --- */
+
+#progetti {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.progetto {
+    display: block;
+    background-color: var(--superficie);
+    padding: 16px;
+    border: 1px solid var(--bordo);
+    border-top: 4px solid var(--primario);
+    border-radius: 10px;
+    box-shadow: var(--ombra);
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.progetto:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(20, 30, 50, 0.1);
+}
+
+.progetto h3 {
+    margin: 0 0 6px;
+}
+
+.progetto .descrizione {
+    color: var(--testo-tenue);
+    font-size: 14px;
+    margin: 0 0 10px;
+}
+
+.progetto .info {
+    font-size: 12px;
+    color: var(--testo-tenue);
+    margin: 0;
+}
+
+/* --- Board --- */
+
+#indietro {
+    display: inline-block;
+    color: var(--primario);
+    text-decoration: none;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+#indietro:hover {
+    text-decoration: underline;
+}
+
+header .chips {
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#form-partecipante {
+    max-width: 440px;
+    margin: 8px auto 0;
+}
+
+#form-partecipante input,
+#form-partecipante select {
+    padding: 5px 8px;
+    font-size: 13px;
+}
+
+#form-partecipante button {
+    padding: 5px 12px;
+}
+
+#apri-finestra {
+    font-weight: 600;
 }
 
 #board {
     display: flex;
-    gap: 15px;
+    gap: 16px;
     align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .colonna {
     flex: 1;
-    background-color: #e0e0e0;
-    padding: 10px;
-    border-radius: 6px;
+    background-color: var(--colonna);
+    padding: 12px;
+    border-radius: 10px;
+    border-top: 4px solid var(--todo);
+}
+
+#doing {
+    border-top-color: var(--doing);
+}
+
+#done {
+    border-top-color: var(--done);
 }
 
 .colonna h2 {
-    text-align: center;
-    margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 12px;
+    font-size: 16px;
 }
 
 .contatore {
-    font-size: 14px;
-    background-color: #999;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
+    font-size: 12px;
+    background-color: var(--superficie);
+    color: var(--testo-tenue);
+    padding: 2px 9px;
+    border-radius: 999px;
 }
 
 .lista {
@@ -80,109 +325,73 @@ button:hover {
 }
 
 .card {
-    background-color: white;
-    padding: 10px;
+    background-color: var(--superficie);
+    padding: 12px;
     margin-bottom: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    border-radius: 8px;
+    border: 1px solid var(--bordo);
+    box-shadow: var(--ombra);
     cursor: grab;
+    transition: box-shadow 0.15s;
+}
+
+.card:hover {
+    box-shadow: 0 3px 10px rgba(20, 30, 50, 0.12);
 }
 
 .card h3 {
-    margin: 0 0 5px 0;
+    margin: 0 0 6px 0;
+    font-size: 15px;
 }
 
-.categoria {
-    font-size: 12px;
-    color: #3b7dd8;
-    margin: 0 0 5px 0;
+.card .categoria {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--primario-scuro);
+    background-color: var(--accento-tenue);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 0 0 6px 0;
 }
 
-.descrizione {
-    margin: 0 0 5px 0;
+.card .descrizione {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+}
+
+.card .descrizione:empty {
+    display: none;
 }
 
 .dettagli {
+    list-style: none;
     font-size: 13px;
-    padding-left: 18px;
-    margin: 5px 0;
+    color: var(--testo-tenue);
+    padding: 0;
+    margin: 6px 0;
 }
 
 .azioni {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.card .azioni button {
+    padding: 5px 10px;
+    font-size: 12px;
 }
 
 .elimina {
-    background-color: #d83b3b;
+    background-color: var(--pericolo);
 }
 
 .elimina:hover {
-    background-color: #a82a2a;
-}
-
-#nuovo-progetto {
-    background-color: white;
-    max-width: 500px;
-    margin: 0 auto 20px auto;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-}
-
-#form-progetto {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-#progetti {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-}
-
-.progetto {
-    display: block;
-    width: 250px;
-    background-color: white;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    color: black;
-    text-decoration: none;
-}
-
-.progetto:hover {
-    border-color: #3b7dd8;
-}
-
-#indietro {
-    display: block;
-    text-align: left;
-    color: #3b7dd8;
-    text-decoration: none;
-    margin-bottom: 10px;
-}
-
-#apri-finestra {
-    display: block;
-    margin: 0 auto 20px auto;
-    padding: 10px 16px;
-}
-
-dialog {
-    width: 400px;
-    max-width: 90%;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 15px;
-}
-
-dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--pericolo-scuro);
 }
 
 .card .sposta-sinistra,
@@ -193,4 +402,206 @@ dialog::backdrop {
 .card.aperta .sposta-sinistra,
 .card.aperta .sposta-destra {
     display: inline-block;
+}
+
+/* --- Finestra nuova attività --- */
+
+dialog {
+    width: 440px;
+    max-width: 92%;
+    border: none;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 10px 40px rgba(20, 30, 50, 0.25);
+    background-color: var(--superficie);
+    color: var(--testo);
+}
+
+dialog h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+dialog::backdrop {
+    background-color: rgba(20, 30, 50, 0.45);
+}
+
+dialog .azioni {
+    justify-content: flex-end;
+    margin-top: 14px;
+}
+
+#annulla {
+    background-color: var(--colonna);
+    color: var(--testo);
+}
+
+#annulla:hover {
+    background-color: var(--bordo);
+}
+
+/* --- Pulsante del tema --- */
+
+.cambia-tema {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 13px;
+    padding: 6px 12px;
+}
+
+/* --- Barra di avanzamento dei progetti --- */
+
+.progresso {
+    height: 6px;
+    background-color: var(--colonna);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progresso .barra {
+    height: 100%;
+    background-color: var(--done);
+}
+
+/* --- Intestazione della board --- */
+
+.azioni.centrate {
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.azioni.centrate button {
+    font-size: 13px;
+    padding: 5px 12px;
+}
+
+.scelta-ruolo {
+    max-width: 180px;
+}
+
+/* --- Barra con ricerca, filtro e nuova attività --- */
+
+#barra-strumenti {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto 20px;
+}
+
+#barra-strumenti input {
+    flex: 1;
+    min-width: 180px;
+    max-width: 320px;
+}
+
+/* --- Priorità e scadenza sulle card --- */
+
+.card .testa {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bollino {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-bottom: 6px;
+}
+
+.priorita-bassa .bollino {
+    background-color: var(--done);
+}
+
+.priorita-media .bollino {
+    background-color: var(--doing);
+}
+
+.priorita-alta .bollino {
+    background-color: var(--pericolo);
+}
+
+.card.scaduta {
+    border-left: 4px solid var(--scaduto);
+}
+
+.testo-scaduto {
+    color: var(--scaduto);
+    font-weight: 600;
+}
+
+/* --- Campi affiancati nella finestra --- */
+
+.tre-colonne {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.tre-colonne div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tre-colonne input,
+.tre-colonne select {
+    width: 100%;
+}
+
+/* --- Riepilogo ore per persona --- */
+
+#riepilogo {
+    max-width: 700px;
+    margin-top: 28px;
+}
+
+#riepilogo table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+#riepilogo th,
+#riepilogo td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--bordo);
+}
+
+#riepilogo th {
+    font-size: 12px;
+    color: var(--testo-tenue);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+#riepilogo tr:last-child td {
+    border-bottom: none;
+}
+
+/* --- Schermi piccoli --- */
+
+@media (max-width: 700px) {
+    body {
+        padding-top: 60px;
+    }
+
+    #board {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tre-colonne {
+        grid-template-columns: 1fr;
+    }
+
+    .riga-input {
+        flex-wrap: wrap;
+    }
 }
