@@ -21,7 +21,6 @@
     --ombra: 0 1px 2px rgba(20, 30, 50, 0.06), 0 2px 6px rgba(20, 30, 50, 0.06);
 }
 
-/* Tema scuro: cambiano solo i colori, il resto dello stile resta uguale */
 html[data-tema="scuro"] {
     --sfondo: #14181f;
     --superficie: #1e242d;
@@ -68,8 +67,6 @@ header h1 {
     margin: 0;
     color: var(--testo-tenue);
 }
-
-/* --- Form e controlli --- */
 
 label {
     font-size: 13px;
@@ -159,8 +156,6 @@ button.secondario:hover {
     min-width: 0;
 }
 
-/* --- Chip dei partecipanti --- */
-
 .chips {
     list-style: none;
     padding: 0;
@@ -197,8 +192,6 @@ button.secondario:hover {
     background: none;
     color: var(--pericolo);
 }
-
-/* --- Elenco progetti --- */
 
 #progetti {
     display: grid;
@@ -241,8 +234,6 @@ button.secondario:hover {
     color: var(--testo-tenue);
     margin: 0;
 }
-
-/* --- Board --- */
 
 #indietro {
     display: inline-block;
@@ -404,8 +395,6 @@ header .chips {
     display: inline-block;
 }
 
-/* --- Finestra nuova attività --- */
-
 dialog {
     width: 440px;
     max-width: 92%;
@@ -440,8 +429,6 @@ dialog .azioni {
     background-color: var(--bordo);
 }
 
-/* --- Pulsante del tema --- */
-
 .cambia-tema {
     position: absolute;
     top: 16px;
@@ -449,8 +436,6 @@ dialog .azioni {
     font-size: 13px;
     padding: 6px 12px;
 }
-
-/* --- Barra di avanzamento dei progetti --- */
 
 .progresso {
     height: 6px;
@@ -464,8 +449,6 @@ dialog .azioni {
     height: 100%;
     background-color: var(--done);
 }
-
-/* --- Intestazione della board --- */
 
 .azioni.centrate {
     justify-content: center;
@@ -481,8 +464,6 @@ dialog .azioni {
     max-width: 180px;
 }
 
-/* --- Barra con ricerca, filtro e nuova attività --- */
-
 #barra-strumenti {
     display: flex;
     flex-wrap: wrap;
@@ -497,8 +478,6 @@ dialog .azioni {
     min-width: 180px;
     max-width: 320px;
 }
-
-/* --- Priorità e scadenza sulle card --- */
 
 .card .testa {
     display: flex;
@@ -534,9 +513,7 @@ dialog .azioni {
     color: var(--scaduto);
     font-weight: 600;
 }
-
-/* --- Campi affiancati nella finestra --- */
-
+ 
 .tre-colonne {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -553,8 +530,6 @@ dialog .azioni {
 .tre-colonne select {
     width: 100%;
 }
-
-/* --- Riepilogo ore per persona --- */
 
 #riepilogo {
     max-width: 700px;
@@ -584,8 +559,6 @@ dialog .azioni {
 #riepilogo tr:last-child td {
     border-bottom: none;
 }
-
-/* --- Schermi piccoli --- */
 
 @media (max-width: 700px) {
     body {
