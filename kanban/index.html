@@ -8,19 +8,29 @@
     <script src="script.js"></script>
 </head>
 <body>
+    <button type="button" class="cambia-tema secondario" title="Cambia tema">Tema scuro</button>
+
     <header>
         <h1>I miei progetti</h1>
-        <p>Scegli un progetto per vedere le sue attività</p>
+        <p class="sottotitolo">Scegli un progetto per vedere le sue attività</p>
     </header>
 
-    <section id="nuovo-progetto">
+    <section id="nuovo-progetto" class="pannello">
         <h2>Nuovo progetto</h2>
         <form id="form-progetto">
             <label for="nome">Nome del progetto</label>
-            <input type="text" id="nome" name="nome" required>
+            <input type="text" id="nome" name="nome" placeholder="Es. Sito aziendale" required>
 
             <label for="descrizione-progetto">Descrizione</label>
-            <textarea id="descrizione-progetto" name="descrizione" rows="3"></textarea>
+            <textarea id="descrizione-progetto" name="descrizione" rows="3" placeholder="Di cosa si tratta?"></textarea>
+
+            <label for="nuovo-partecipante">Partecipanti</label>
+            <div class="riga-input">
+                <input type="text" id="nuovo-partecipante" placeholder="Nome e cognome">
+                <select id="ruolo-partecipante" class="scelta-ruolo"></select>
+                <button type="button" id="aggiungi-partecipante" class="secondario">Aggiungi</button>
+            </div>
+            <ul id="lista-partecipanti" class="chips"></ul>
 
             <button type="submit">Crea progetto</button>
         </form>
