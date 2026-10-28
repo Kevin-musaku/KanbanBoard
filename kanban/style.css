@@ -1,0 +1,196 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#nuova-attivita {
+    background-color: white;
+    max-width: 500px;
+    margin: 0 auto 20px auto;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+#form-nuova {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+input, select, textarea {
+    padding: 6px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+button {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #3b7dd8;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2a5fa8;
+}
+
+#board {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.colonna {
+    flex: 1;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.colonna h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.contatore {
+    font-size: 14px;
+    background-color: #999;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.lista {
+    min-height: 100px;
+}
+
+.card {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    cursor: grab;
+}
+
+.card h3 {
+    margin: 0 0 5px 0;
+}
+
+.categoria {
+    font-size: 12px;
+    color: #3b7dd8;
+    margin: 0 0 5px 0;
+}
+
+.descrizione {
+    margin: 0 0 5px 0;
+}
+
+.dettagli {
+    font-size: 13px;
+    padding-left: 18px;
+    margin: 5px 0;
+}
+
+.azioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.elimina {
+    background-color: #d83b3b;
+}
+
+.elimina:hover {
+    background-color: #a82a2a;
+}
+
+#nuovo-progetto {
+    background-color: white;
+    max-width: 500px;
+    margin: 0 auto 20px auto;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+#form-progetto {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#progetti {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.progetto {
+    display: block;
+    width: 250px;
+    background-color: white;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    color: black;
+    text-decoration: none;
+}
+
+.progetto:hover {
+    border-color: #3b7dd8;
+}
+
+#indietro {
+    display: block;
+    text-align: left;
+    color: #3b7dd8;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+#apri-finestra {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 10px 16px;
+}
+
+dialog {
+    width: 400px;
+    max-width: 90%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 15px;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.card .sposta-sinistra,
+.card .sposta-destra {
+    display: none;
+}
+
+.card.aperta .sposta-sinistra,
+.card.aperta .sposta-destra {
+    display: inline-block;
+}

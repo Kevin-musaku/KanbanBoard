@@ -1,0 +1,75 @@
+ora <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" id="indietro">&larr; Tutti i progetti</a>
+        <h1 id="nome-progetto">Progetto</h1>
+    </header>
+
+    <button id="apri-finestra">+ Nuova attività</button>
+
+    <main id="board">
+        <section class="colonna" id="todo">
+            <h2>Da fare <span class="contatore">0</span></h2>
+            <div class="lista"></div>
+        </section>
+
+        <section class="colonna" id="doing">
+            <h2>In corso <span class="contatore">0</span></h2>
+            <div class="lista"></div>
+        </section>
+
+        <section class="colonna" id="done">
+            <h2>Fatto <span class="contatore">0</span></h2>
+            <div class="lista"></div>
+        </section>
+    </main>
+
+    <dialog id="finestra-attivita">
+        <h2>Nuova attività</h2>
+        <form id="form-nuova" method="dialog">
+            <label for="titolo">Titolo</label>
+            <input type="text" id="titolo" name="titolo" placeholder="Titolo dell'attività" required>
+
+            <label for="descrizione">Descrizione</label>
+            <textarea id="descrizione" name="descrizione" rows="3" placeholder="Descrizione"></textarea>
+
+            <label for="categoria">Categoria</label>
+            <input type="text" id="categoria" name="categoria" required>
+
+            <label for="professionista">Tipo di professionista</label>
+            <select id="professionista" name="professionista" required>
+                <option value="">Seleziona...</option>
+                <option value="Sviluppatore frontend">Sviluppatore frontend</option>
+                <option value="Sviluppatore backend">Sviluppatore backend</option>
+                <option value="Sviluppatore full stack">Sviluppatore full stack</option>
+                <option value="Database administrator">Database administrator</option>
+                <option value="Sistemista">Sistemista</option>
+                <option value="Specialista di rete">Specialista di rete</option>
+                <option value="Esperto di sicurezza">Esperto di sicurezza</option>
+                <option value="Designer UI/UX">Designer UI/UX</option>
+                <option value="Tester">Tester</option>
+                <option value="Project manager">Project manager</option>
+            </select>
+
+            <label for="persona">Nome della persona</label>
+            <input type="text" id="persona" name="persona" placeholder="Chi svolgerà l'attività" required>
+
+            <label for="durata">Durata (ore)</label>
+            <input type="number" id="durata" name="durata" min="1" required>
+
+            <div class="azioni">
+                <button type="submit">Aggiungi</button>
+                <button type="button" id="annulla">Annulla</button>
+            </div>
+        </form>
+    </dialog>
+</body>
+</html>

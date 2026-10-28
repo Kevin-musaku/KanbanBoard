@@ -1,13 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Kanban Board - Progetti</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
 </head>
 <body>
-    
+    <header>
+        <h1>I miei progetti</h1>
+        <p>Scegli un progetto per vedere le sue attività</p>
+    </header>
+
+    <section id="nuovo-progetto">
+        <h2>Nuovo progetto</h2>
+        <form id="form-progetto">
+            <label for="nome">Nome del progetto</label>
+            <input type="text" id="nome" name="nome" required>
+
+            <label for="descrizione-progetto">Descrizione</label>
+            <textarea id="descrizione-progetto" name="descrizione" rows="3"></textarea>
+
+            <button type="submit">Crea progetto</button>
+        </form>
+    </section>
+
+    <main id="progetti"></main>
 </body>
 </html>
