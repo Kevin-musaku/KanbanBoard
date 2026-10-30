@@ -245,6 +245,7 @@ function paginaBoard() {
     const formPartecipante = document.getElementById("form-partecipante");
     const campoCerca = document.getElementById("cerca");
     const filtroPersona = document.getElementById("filtro-persona");
+    const ordinaPriorita = document.getElementById("ordina-priorita");
 
     // L'attività che si sta modificando, oppure null se se ne crea una nuova
     let attivitaInModifica = null;
@@ -442,6 +443,7 @@ function paginaBoard() {
 
     campoCerca.addEventListener("input", mostra);
     filtroPersona.addEventListener("change", mostra);
+    ordinaPriorita.addEventListener("change", mostra);
 
     /* --- Trascinamento delle card --- */
 
@@ -630,6 +632,18 @@ function paginaBoard() {
             const personaOk = !persona || a.persona === persona;
             return titoloOk && personaOk;
         });
+
+        // Ordinamento per priorità: assegno un peso a ogni priorità
+        // e ordino le attività visibili dal peso più grande al più piccolo
+        if (ordinaPriorita.value) {
+            const pesi = { alta: 3, media: 2, bassa: 1 };
+            const alta = ordinaPriorita.value === "alta";
+            visibili.sort(function (a, b) {
+                const pa = pesi[a.priorita || "media"];
+                const pb = pesi[b.priorita || "media"];
+                return alta ? pb - pa : pa - pb;
+            });
+        }
 
         stati.forEach(function (stato) {
             const colonna = document.getElementById(stato);
