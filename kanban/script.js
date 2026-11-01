@@ -24,19 +24,18 @@ if (localStorage.getItem("tema") === "scuro") {
 function preparaTema() {
     const pulsante = document.querySelector(".cambia-tema");
     const radice = document.documentElement;
-
-    function aggiornaTesto() {
+    const aggiornaTesto = () => {
         pulsante.textContent = radice.dataset.tema === "scuro" ? "Tema chiaro" : "Tema scuro";
-    }
+    };
 
-    pulsante.addEventListener("click", function () {
-        if (radice.dataset.tema === "scuro") {
-            delete radice.dataset.tema;
-            localStorage.setItem("tema", "chiaro");
-        } else {
+    pulsante.addEventListener("click", () => {
+        const scuro = radice.dataset.tema !== "scuro";
+        if (scuro) {
             radice.dataset.tema = "scuro";
-            localStorage.setItem("tema", "scuro");
+        } else {
+            delete radice.dataset.tema;
         }
+        localStorage.setItem("tema", scuro ? "scuro" : "chiaro");
         aggiornaTesto();
     });
 
@@ -50,10 +49,10 @@ function leggiProgetti() {
 
     // Le versioni precedenti salvavano i partecipanti come semplici nomi:
     // li trasformo in oggetti { nome, ruolo }.
-    progetti.forEach(function (progetto) {
-        progetto.partecipanti = (progetto.partecipanti || []).map(function (p) {
-            return typeof p === "string" ? { nome: p, ruolo: "" } : p;
-        });
+    progetti.forEach(progetto => {
+        progetto.partecipanti = (progetto.partecipanti || []).map(p =>
+            typeof p === "string" ? { nome: p, ruolo: "" } : p
+        );
     });
 
     return progetti;
@@ -65,91 +64,78 @@ function salvaProgetti(progetti) {
 
 /* ---------- Funzioni di supporto ---------- */
 
+// Crea un elemento con classe e testo
+function crea(tag, classe = "", testo = "") {
+    const elemento = document.createElement(tag);
+    elemento.className = classe;
+    elemento.textContent = testo;
+    return elemento;
+}
+
 // Riempie una <select> con una prima voce vuota seguita dall'elenco di voci
 function riempiSelect(select, voci, primaVoce) {
-    select.innerHTML = "";
-
-    const vuota = document.createElement("option");
-    vuota.value = "";
-    vuota.textContent = primaVoce;
-    select.appendChild(vuota);
-
-    voci.forEach(function (voce) {
-        const opzione = document.createElement("option");
-        opzione.value = voce;
-        opzione.textContent = voce;
-        select.appendChild(opzione);
-    });
+    select.replaceChildren(new Option(primaVoce, ""), ...voci.map(voce => new Option(voce, voce)));
 }
 
 // Mostra i partecipanti come etichette, con la × per rimuoverli
 function mostraChips(lista, partecipanti, rimuovi) {
-    lista.innerHTML = "";
-    partecipanti.forEach(function (partecipante, indice) {
-        const chip = document.createElement("li");
-        chip.textContent = partecipante.nome;
-        if (partecipante.ruolo) {
-            chip.textContent += " · " + partecipante.ruolo;
-        }
-
-        const x = document.createElement("button");
+    lista.replaceChildren(...partecipanti.map((p, indice) => {
+        const chip = crea("li", "", p.ruolo ? `${p.nome} · ${p.ruolo}` : p.nome);
+        const x = crea("button", "rimuovi");
         x.type = "button";
-        x.className = "rimuovi";
         x.title = "Rimuovi";
         x.innerHTML = "&times;";
-        x.addEventListener("click", function () {
-            rimuovi(indice);
-        });
-        chip.appendChild(x);
-
-        lista.appendChild(chip);
-    });
+        x.addEventListener("click", () => rimuovi(indice));
+        chip.append(x);
+        return chip;
+    }));
 }
 
-function oreTotali(elenco) {
-    return elenco.reduce(function (totale, attivita) {
-        return totale + Number(attivita.durata);
-    }, 0);
+// Aggiunge un partecipante all'elenco se il nome è nuovo; dice se l'ha aggiunto
+function aggiungiPartecipante(elenco, nome, ruolo) {
+    nome = nome.trim();
+    if (!nome || elenco.some(p => p.nome === nome)) {
+        return false;
+    }
+    elenco.push({ nome, ruolo });
+    return true;
 }
 
-// Data di oggi nel formato AAAA-MM-GG, lo stesso usato da <input type="date">
-function oggi() {
-    const data = new Date();
-    data.setMinutes(data.getMinutes() - data.getTimezoneOffset());
-    return data.toISOString().slice(0, 10);
+const oreTotali = elenco => elenco.reduce((totale, a) => totale + Number(a.durata), 0);
+
+// Data nel formato AAAA-MM-GG, lo stesso usato da <input type="date">
+function formatoData(anno, mese, giorno) {
+    const due = n => String(n).padStart(2, "0");
+    return `${anno}-${due(mese + 1)}-${due(giorno)}`;
 }
+
+const oggi = () => {
+    const d = new Date();
+    return formatoData(d.getFullYear(), d.getMonth(), d.getDate());
+};
 
 // Da "2026-10-28" a "28/10/2026"
-function formattaScadenza(scadenza) {
-    return scadenza.split("-").reverse().join("/");
-}
+const formattaScadenza = scadenza => scadenza.split("-").reverse().join("/");
 
 /* ---------- Pagina dei progetti (index.html) ---------- */
 
 function paginaProgetti() {
     const form = document.getElementById("form-progetto");
-    const contenitore = document.getElementById("progetti");
     const campoPartecipante = document.getElementById("nuovo-partecipante");
     const sceltaRuolo = document.getElementById("ruolo-partecipante");
-    const listaPartecipanti = document.getElementById("lista-partecipanti");
     let partecipanti = [];
 
     riempiSelect(sceltaRuolo, professioni, "Ruolo (facoltativo)");
 
     function mostraPartecipanti() {
-        mostraChips(listaPartecipanti, partecipanti, function (indice) {
+        mostraChips(document.getElementById("lista-partecipanti"), partecipanti, indice => {
             partecipanti.splice(indice, 1);
             mostraPartecipanti();
         });
     }
 
-    function aggiungiPartecipante() {
-        const nome = campoPartecipante.value.trim();
-        const giaPresente = partecipanti.some(function (p) {
-            return p.nome === nome;
-        });
-        if (nome && !giaPresente) {
-            partecipanti.push({ nome: nome, ruolo: sceltaRuolo.value });
+    function aggiungi() {
+        if (aggiungiPartecipante(partecipanti, campoPartecipante.value, sceltaRuolo.value)) {
             mostraPartecipanti();
         }
         campoPartecipante.value = "";
@@ -157,27 +143,23 @@ function paginaProgetti() {
         campoPartecipante.focus();
     }
 
-    document.getElementById("aggiungi-partecipante").addEventListener("click", aggiungiPartecipante);
+    document.getElementById("aggiungi-partecipante").addEventListener("click", aggiungi);
 
-    campoPartecipante.addEventListener("keydown", function (e) {
+    campoPartecipante.addEventListener("keydown", e => {
         if (e.key === "Enter") {
             e.preventDefault();
-            aggiungiPartecipante();
+            aggiungi();
         }
     });
 
     function mostra() {
-        contenitore.innerHTML = "";
-        leggiProgetti().forEach(function (progetto) {
+        document.getElementById("progetti").replaceChildren(...leggiProgetti().map(progetto => {
             const totale = progetto.attivita.length;
-            const fatte = progetto.attivita.filter(function (a) {
-                return a.stato === "done";
-            }).length;
+            const fatte = progetto.attivita.filter(a => a.stato === "done").length;
             const percentuale = totale ? Math.round(fatte / totale * 100) : 0;
             const persone = progetto.partecipanti.length;
 
-            const link = document.createElement("a");
-            link.className = "progetto";
+            const link = crea("a", "progetto");
             link.href = "board.html?id=" + progetto.id;
             link.innerHTML =
                 "<h3></h3>" +
@@ -189,20 +171,17 @@ function paginaProgetti() {
             link.querySelector(".descrizione").textContent = progetto.descrizione;
             link.querySelector(".barra").style.width = percentuale + "%";
             link.querySelector(".info").textContent =
-                totale + " attività · " +
-                persone + (persone === 1 ? " partecipante" : " partecipanti") + " · " +
-                percentuale + "% completato";
-
-            contenitore.appendChild(link);
-        });
+                `${totale} attività · ${persone} ${persone === 1 ? "partecipante" : "partecipanti"} · ${percentuale}% completato`;
+            return link;
+        }));
     }
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", e => {
         e.preventDefault();
 
         // Se è rimasto un nome scritto ma non aggiunto, lo includo
         if (campoPartecipante.value.trim()) {
-            aggiungiPartecipante();
+            aggiungi();
         }
 
         const progetti = leggiProgetti();
@@ -210,7 +189,7 @@ function paginaProgetti() {
             id: Date.now(),
             nome: form.nome.value,
             descrizione: form.descrizione.value,
-            partecipanti: partecipanti,
+            partecipanti,
             attivita: []
         });
         salvaProgetti(progetti);
@@ -229,9 +208,7 @@ function paginaProgetti() {
 function paginaBoard() {
     const id = new URLSearchParams(window.location.search).get("id");
     const progetti = leggiProgetti();
-    const progetto = progetti.find(function (p) {
-        return p.id == id;
-    });
+    const progetto = progetti.find(p => p.id == id);
 
     if (!progetto) {
         window.location.href = "index.html";
@@ -248,19 +225,15 @@ function paginaBoard() {
 
     // L'attività che si sta modificando, oppure null se se ne crea una nuova
     let attivitaInModifica = null;
+    // Primo giorno del mese mostrato nel calendario
+    const mese = new Date();
+    mese.setDate(1);
 
     riempiSelect(sceltaProfessionista, professioni, "Seleziona...");
     riempiSelect(formPartecipante.ruolo, professioni, "Ruolo (facoltativo)");
 
-    function salva() {
-        salvaProgetti(progetti);
-    }
-
-    function trova(idAttivita) {
-        return progetto.attivita.find(function (a) {
-            return a.id == idAttivita;
-        });
-    }
+    const salva = () => salvaProgetti(progetti);
+    const trova = idAttivita => progetto.attivita.find(a => a.id == idAttivita);
 
     /* --- Intestazione: nome, modifica ed eliminazione del progetto --- */
 
@@ -270,7 +243,7 @@ function paginaBoard() {
         document.getElementById("descrizione-progetto").textContent = progetto.descrizione;
     }
 
-    document.getElementById("modifica-progetto").addEventListener("click", function () {
+    document.getElementById("modifica-progetto").addEventListener("click", () => {
         const nuovoNome = prompt("Nome del progetto", progetto.nome);
         if (nuovoNome === null || !nuovoNome.trim()) {
             return;
@@ -285,15 +258,11 @@ function paginaBoard() {
         mostraIntestazione();
     });
 
-    document.getElementById("elimina-progetto").addEventListener("click", function () {
-        if (!confirm("Eliminare il progetto \"" + progetto.nome + "\" e tutte le sue attività?")) {
-            return;
+    document.getElementById("elimina-progetto").addEventListener("click", () => {
+        if (confirm(`Eliminare il progetto "${progetto.nome}" e tutte le sue attività?`)) {
+            salvaProgetti(progetti.filter(p => p !== progetto));
+            window.location.href = "index.html";
         }
-        const rimanenti = progetti.filter(function (p) {
-            return p !== progetto;
-        });
-        salvaProgetti(rimanenti);
-        window.location.href = "index.html";
     });
 
     /* --- Partecipanti --- */
@@ -301,10 +270,7 @@ function paginaBoard() {
     function mostraPartecipanti() {
         mostraChips(document.getElementById("partecipanti-progetto"), progetto.partecipanti, rimuoviPartecipante);
 
-        const nomi = progetto.partecipanti.map(function (p) {
-            return p.nome;
-        });
-
+        const nomi = progetto.partecipanti.map(p => p.nome);
         riempiSelect(sceltaPersona, nomi,
             nomi.length ? "Seleziona..." : "Nessun partecipante: aggiungili in alto");
 
@@ -316,19 +282,17 @@ function paginaBoard() {
 
     function rimuoviPartecipante(indice) {
         const nome = progetto.partecipanti[indice].nome;
-        const assegnate = progetto.attivita.filter(function (a) {
-            return a.persona === nome;
-        });
+        const assegnate = progetto.attivita.filter(a => a.persona === nome);
 
-        let messaggio = "Rimuovere " + nome + " dal progetto?";
+        let messaggio = `Rimuovere ${nome} dal progetto?`;
         if (assegnate.length) {
-            messaggio += "\nLe sue " + assegnate.length + " attività resteranno senza assegnatario.";
+            messaggio += `\nLe sue ${assegnate.length} attività resteranno senza assegnatario.`;
         }
         if (!confirm(messaggio)) {
             return;
         }
 
-        assegnate.forEach(function (a) {
+        assegnate.forEach(a => {
             a.persona = "";
         });
         progetto.partecipanti.splice(indice, 1);
@@ -337,14 +301,9 @@ function paginaBoard() {
         mostra();
     }
 
-    formPartecipante.addEventListener("submit", function (e) {
+    formPartecipante.addEventListener("submit", e => {
         e.preventDefault();
-        const nome = formPartecipante.nome.value.trim();
-        const giaPresente = progetto.partecipanti.some(function (p) {
-            return p.nome === nome;
-        });
-        if (nome && !giaPresente) {
-            progetto.partecipanti.push({ nome: nome, ruolo: formPartecipante.ruolo.value });
+        if (aggiungiPartecipante(progetto.partecipanti, formPartecipante.nome.value, formPartecipante.ruolo.value)) {
             salva();
             mostraPartecipanti();
             mostra();
@@ -353,10 +312,8 @@ function paginaBoard() {
     });
 
     // Scegliendo una persona, propongo il suo ruolo come tipo di professionista
-    sceltaPersona.addEventListener("change", function () {
-        const partecipante = progetto.partecipanti.find(function (p) {
-            return p.nome === sceltaPersona.value;
-        });
+    sceltaPersona.addEventListener("change", () => {
+        const partecipante = progetto.partecipanti.find(p => p.nome === sceltaPersona.value);
         if (partecipante && partecipante.ruolo) {
             sceltaProfessionista.value = partecipante.ruolo;
         }
@@ -364,38 +321,21 @@ function paginaBoard() {
 
     /* --- Finestra per creare o modificare un'attività --- */
 
-    // Suggerisce le categorie già usate nel progetto
-    function aggiornaCategorie() {
-        const elenco = document.getElementById("elenco-categorie");
-        elenco.innerHTML = "";
-        const categorie = [];
-        progetto.attivita.forEach(function (a) {
-            if (!categorie.includes(a.categoria)) {
-                categorie.push(a.categoria);
-            }
-        });
-        categorie.forEach(function (categoria) {
-            const opzione = document.createElement("option");
-            opzione.value = categoria;
-            elenco.appendChild(opzione);
-        });
-    }
-
-    function apriFinestra(attivita) {
-        attivitaInModifica = attivita || null;
+    function apriFinestra(attivita = null) {
+        attivitaInModifica = attivita;
         form.reset();
-        aggiornaCategorie();
+
+        // Suggerisce le categorie già usate nel progetto
+        const categorie = new Set(progetto.attivita.map(a => a.categoria));
+        document.getElementById("elenco-categorie").replaceChildren(...[...categorie].map(c => new Option(c)));
 
         document.getElementById("titolo-finestra").textContent = attivita ? "Modifica attività" : "Nuova attività";
         document.getElementById("conferma").textContent = attivita ? "Salva" : "Aggiungi";
 
         if (attivita) {
-            form.titolo.value = attivita.titolo;
-            form.descrizione.value = attivita.descrizione;
-            form.categoria.value = attivita.categoria;
-            form.persona.value = attivita.persona;
-            form.professionista.value = attivita.professionista;
-            form.durata.value = attivita.durata;
+            ["titolo", "descrizione", "categoria", "persona", "professionista", "durata"].forEach(campo => {
+                form[campo].value = attivita[campo];
+            });
             form.priorita.value = attivita.priorita || "media";
             form.scadenza.value = attivita.scadenza || "";
         }
@@ -403,15 +343,10 @@ function paginaBoard() {
         finestra.showModal();
     }
 
-    document.getElementById("apri-finestra").addEventListener("click", function () {
-        apriFinestra();
-    });
+    document.getElementById("apri-finestra").addEventListener("click", () => apriFinestra());
+    document.getElementById("annulla").addEventListener("click", () => finestra.close());
 
-    document.getElementById("annulla").addEventListener("click", function () {
-        finestra.close();
-    });
-
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", e => {
         e.preventDefault();
 
         const dati = {
@@ -428,9 +363,7 @@ function paginaBoard() {
         if (attivitaInModifica) {
             Object.assign(attivitaInModifica, dati);
         } else {
-            dati.id = Date.now();
-            dati.stato = "todo";
-            progetto.attivita.push(dati);
+            progetto.attivita.push({ ...dati, id: Date.now(), stato: "todo" });
         }
 
         salva();
@@ -445,12 +378,10 @@ function paginaBoard() {
 
     /* --- Trascinamento delle card --- */
 
-    document.querySelectorAll(".lista").forEach(function (lista) {
-        lista.addEventListener("dragover", function (e) {
-            e.preventDefault();
-        });
+    document.querySelectorAll(".lista").forEach(lista => {
+        lista.addEventListener("dragover", e => e.preventDefault());
 
-        lista.addEventListener("drop", function (e) {
+        lista.addEventListener("drop", e => {
             e.preventDefault();
             const attivita = trova(e.dataTransfer.getData("text/plain"));
             const cardSotto = e.target.closest(".card");
@@ -466,8 +397,7 @@ function paginaBoard() {
 
             // ...e la rimetto prima della card su cui è stata lasciata, oppure in fondo
             if (cardSotto) {
-                const posizione = progetto.attivita.indexOf(trova(cardSotto.dataset.id));
-                progetto.attivita.splice(posizione, 0, attivita);
+                progetto.attivita.splice(progetto.attivita.indexOf(trova(cardSotto.dataset.id)), 0, attivita);
             } else {
                 progetto.attivita.push(attivita);
             }
@@ -478,22 +408,18 @@ function paginaBoard() {
     });
 
     function sposta(attivita, direzione) {
-        const posizione = stati.indexOf(attivita.stato) + direzione;
-        if (posizione >= 0 && posizione < stati.length) {
-            attivita.stato = stati[posizione];
-            salva();
-            mostra();
-        }
+        attivita.stato = stati[stati.indexOf(attivita.stato) + direzione];
+        salva();
+        mostra();
     }
 
     /* --- Card delle attività --- */
 
     function creaPulsante(testo, classe, azione) {
-        const pulsante = document.createElement("button");
+        const pulsante = crea("button", classe);
         pulsante.type = "button";
-        pulsante.className = classe;
         pulsante.innerHTML = testo;
-        pulsante.addEventListener("click", function (e) {
+        pulsante.addEventListener("click", e => {
             e.stopPropagation();
             azione();
         });
@@ -504,11 +430,8 @@ function paginaBoard() {
         const priorita = attivita.priorita || "media";
         const scaduta = attivita.scadenza && attivita.scadenza < oggi() && attivita.stato !== "done";
 
-        const card = document.createElement("article");
-        card.className = "card priorita-" + priorita;
-        if (scaduta) {
-            card.classList.add("scaduta");
-        }
+        const card = crea("article", "card priorita-" + priorita);
+        card.classList.toggle("scaduta", Boolean(scaduta));
         card.dataset.id = attivita.id;
         card.draggable = true;
 
@@ -524,62 +447,41 @@ function paginaBoard() {
         card.querySelector(".categoria").textContent = attivita.categoria;
         card.querySelector(".descrizione").textContent = attivita.descrizione;
 
-        const dettagli = card.querySelector(".dettagli");
-        function aggiungiDettaglio(testo) {
-            const voce = document.createElement("li");
-            voce.textContent = testo;
-            dettagli.appendChild(voce);
-            return voce;
-        }
-
-        aggiungiDettaglio("Assegnata a: " + (attivita.persona || "nessuno"));
-        aggiungiDettaglio("Professionista: " + attivita.professionista);
-        aggiungiDettaglio("Durata: " + attivita.durata + " ore");
-        if (attivita.scadenza) {
-            const voce = aggiungiDettaglio("Scadenza: " + formattaScadenza(attivita.scadenza) + (scaduta ? " (scaduta)" : ""));
-            if (scaduta) {
-                voce.className = "testo-scaduto";
-            }
-        }
         // L'id è il momento di creazione (Date.now()), quindi lo uso come data
-        aggiungiDettaglio("Creata il " + new Date(attivita.id).toLocaleDateString("it-IT"));
+        const dettagli = [
+            ["Assegnata a: " + (attivita.persona || "nessuno")],
+            ["Professionista: " + attivita.professionista],
+            ["Durata: " + attivita.durata + " ore"]
+        ];
+        if (attivita.scadenza) {
+            dettagli.push(["Scadenza: " + formattaScadenza(attivita.scadenza) + (scaduta ? " (scaduta)" : ""),
+                scaduta ? "testo-scaduto" : ""]);
+        }
+        dettagli.push(["Creata il " + new Date(attivita.id).toLocaleDateString("it-IT")]);
+        card.querySelector(".dettagli").replaceChildren(...dettagli.map(([testo, classe]) => crea("li", classe, testo)));
 
-        const azioni = card.querySelector(".azioni");
         const posizione = stati.indexOf(attivita.stato);
+        const azioni = card.querySelector(".azioni");
 
         if (posizione > 0) {
-            azioni.appendChild(creaPulsante("&larr; Sinistra", "sposta-sinistra", function () {
-                sposta(attivita, -1);
-            }));
+            azioni.append(creaPulsante("&larr; Sinistra", "sposta-sinistra", () => sposta(attivita, -1)));
         }
         if (posizione < stati.length - 1) {
-            azioni.appendChild(creaPulsante("Destra &rarr;", "sposta-destra", function () {
-                sposta(attivita, 1);
-            }));
+            azioni.append(creaPulsante("Destra &rarr;", "sposta-destra", () => sposta(attivita, 1)));
         }
+        azioni.append(
+            creaPulsante("Modifica", "secondario", () => apriFinestra(attivita)),
+            creaPulsante("Elimina", "elimina", () => {
+                if (confirm(`Eliminare l'attività "${attivita.titolo}"?`)) {
+                    progetto.attivita = progetto.attivita.filter(a => a.id != attivita.id);
+                    salva();
+                    mostra();
+                }
+            })
+        );
 
-        azioni.appendChild(creaPulsante("Modifica", "secondario", function () {
-            apriFinestra(attivita);
-        }));
-
-        azioni.appendChild(creaPulsante("Elimina", "elimina", function () {
-            if (!confirm("Eliminare l'attività \"" + attivita.titolo + "\"?")) {
-                return;
-            }
-            progetto.attivita = progetto.attivita.filter(function (a) {
-                return a.id != attivita.id;
-            });
-            salva();
-            mostra();
-        }));
-
-        card.addEventListener("click", function () {
-            card.classList.toggle("aperta");
-        });
-
-        card.addEventListener("dragstart", function (e) {
-            e.dataTransfer.setData("text/plain", attivita.id);
-        });
+        card.addEventListener("click", () => card.classList.toggle("aperta"));
+        card.addEventListener("dragstart", e => e.dataTransfer.setData("text/plain", attivita.id));
 
         return card;
     }
@@ -587,37 +489,68 @@ function paginaBoard() {
     /* --- Riepilogo delle ore per persona --- */
 
     function mostraRiepilogo() {
-        const corpo = document.querySelector("#riepilogo tbody");
-        corpo.innerHTML = "";
-
         // Tutti i partecipanti, più eventuali nomi presenti solo nelle attività
         // (compreso "" per le attività senza assegnatario)
-        const persone = progetto.partecipanti.map(function (p) {
-            return p.nome;
-        });
-        progetto.attivita.forEach(function (a) {
-            if (!persone.includes(a.persona)) {
-                persone.push(a.persona);
-            }
-        });
+        const persone = [...new Set([...progetto.partecipanti.map(p => p.nome), ...progetto.attivita.map(a => a.persona)])];
 
-        persone.forEach(function (nome) {
-            const sue = progetto.attivita.filter(function (a) {
-                return a.persona === nome;
-            });
-            const completate = sue.filter(function (a) {
-                return a.stato === "done";
-            });
+        document.querySelector("#riepilogo tbody").replaceChildren(...persone.map(nome => {
+            const sue = progetto.attivita.filter(a => a.persona === nome);
+            const completate = sue.filter(a => a.stato === "done");
 
-            const riga = corpo.insertRow();
-            riga.insertCell().textContent = nome || "Non assegnate";
-            riga.insertCell().textContent = sue.length;
-            riga.insertCell().textContent = oreTotali(sue) + " h";
-            riga.insertCell().textContent = oreTotali(completate) + " h";
-        });
+            const riga = document.createElement("tr");
+            [nome || "Non assegnate", sue.length, oreTotali(sue) + " h", oreTotali(completate) + " h"]
+                .forEach(valore => riga.append(crea("td", "", valore)));
+            return riga;
+        }));
 
         document.getElementById("riepilogo").hidden = persone.length === 0;
     }
+
+    /* --- Calendario delle scadenze --- */
+
+    function mostraCalendario(attivita) {
+        const anno = mese.getFullYear();
+        const numeroMese = mese.getMonth();
+        const giorniDelMese = new Date(anno, numeroMese + 1, 0).getDate();
+        const celle = [];
+
+        document.getElementById("titolo-mese").textContent =
+            mese.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+
+        // Il calendario parte dal lunedì: lascio vuote le celle prima del primo giorno
+        for (let i = 0; i < (mese.getDay() + 6) % 7; i++) {
+            celle.push(crea("div", "giorno vuoto"));
+        }
+
+        for (let giorno = 1; giorno <= giorniDelMese; giorno++) {
+            const data = formatoData(anno, numeroMese, giorno);
+            const cella = crea("div", data === oggi() ? "giorno oggi" : "giorno");
+            cella.append(crea("span", "numero", giorno));
+
+            attivita.filter(a => a.scadenza === data).forEach(a => {
+                const voce = crea("button", "voce priorita-" + (a.priorita || "media"), a.titolo);
+                voce.type = "button";
+                voce.title = a.titolo;
+                voce.classList.toggle("fatta", a.stato === "done");
+                voce.addEventListener("click", () => apriFinestra(a));
+                cella.append(voce);
+            });
+
+            celle.push(cella);
+        }
+
+        document.getElementById("giorni").replaceChildren(...celle);
+    }
+
+    document.getElementById("mese-precedente").addEventListener("click", () => {
+        mese.setMonth(mese.getMonth() - 1);
+        mostra();
+    });
+
+    document.getElementById("mese-successivo").addEventListener("click", () => {
+        mese.setMonth(mese.getMonth() + 1);
+        mostra();
+    });
 
     /* --- Disegno della board --- */
 
@@ -625,27 +558,20 @@ function paginaBoard() {
         const testo = campoCerca.value.trim().toLowerCase();
         const persona = filtroPersona.value;
 
-        const visibili = progetto.attivita.filter(function (a) {
-            const titoloOk = a.titolo.toLowerCase().includes(testo);
-            const personaOk = !persona || a.persona === persona;
-            return titoloOk && personaOk;
-        });
+        const visibili = progetto.attivita.filter(a =>
+            a.titolo.toLowerCase().includes(testo) && (!persona || a.persona === persona)
+        );
 
-        stati.forEach(function (stato) {
+        stati.forEach(stato => {
             const colonna = document.getElementById(stato);
-            const lista = colonna.querySelector(".lista");
-            const attivita = visibili.filter(function (a) {
-                return a.stato === stato;
-            });
+            const attivita = visibili.filter(a => a.stato === stato);
 
-            lista.innerHTML = "";
-            attivita.forEach(function (a) {
-                lista.appendChild(creaCard(a));
-            });
-            colonna.querySelector(".contatore").textContent = attivita.length + " · " + oreTotali(attivita) + " h";
+            colonna.querySelector(".lista").replaceChildren(...attivita.map(creaCard));
+            colonna.querySelector(".contatore").textContent = `${attivita.length} · ${oreTotali(attivita)} h`;
         });
 
         mostraRiepilogo();
+        mostraCalendario(visibili);
     }
 
     mostraIntestazione();
@@ -653,7 +579,7 @@ function paginaBoard() {
     mostra();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     preparaTema();
     if (document.getElementById("form-progetto")) {
         paginaProgetti();

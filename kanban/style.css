@@ -512,18 +512,20 @@ dialog .azioni {
     height: 10px;
     border-radius: 50%;
     margin-bottom: 6px;
+    background-color: var(--colore);
 }
 
-.priorita-bassa .bollino {
-    background-color: var(--done);
+/* Il colore della priorità è usato dal bollino delle card e dalle voci del calendario */
+.priorita-bassa {
+    --colore: var(--done);
 }
 
-.priorita-media .bollino {
-    background-color: var(--doing);
+.priorita-media {
+    --colore: var(--doing);
 }
 
-.priorita-alta .bollino {
-    background-color: var(--pericolo);
+.priorita-alta {
+    --colore: var(--pericolo);
 }
 
 .card.scaduta {
@@ -554,11 +556,100 @@ dialog .azioni {
     width: 100%;
 }
 
-/* --- Riepilogo ore per persona --- */
+/* --- Calendario e riepilogo ore, affiancati sotto la board --- */
+
+#sotto-board {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 28px auto 0;
+}
+
+#sotto-board .pannello {
+    max-width: none;
+    margin: 0;
+}
+
+#calendario {
+    flex: 2;
+}
 
 #riepilogo {
-    max-width: 700px;
-    margin-top: 28px;
+    flex: 1;
+}
+
+.testa-calendario {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.testa-calendario h2 {
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.griglia-calendario {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.giorni-settimana {
+    text-align: center;
+    font-size: 12px;
+    color: var(--testo-tenue);
+    margin-bottom: 4px;
+}
+
+.giorno {
+    min-height: 80px;
+    padding: 4px;
+    border: 1px solid var(--bordo);
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.giorno.vuoto {
+    border: none;
+}
+
+.giorno.oggi {
+    border-color: var(--primario);
+    background-color: var(--accento-tenue);
+}
+
+.giorno .numero {
+    display: block;
+    color: var(--testo-tenue);
+    margin-bottom: 2px;
+}
+
+.voce {
+    display: block;
+    width: 100%;
+    margin-bottom: 2px;
+    padding: 2px 5px;
+    border-left: 3px solid var(--colore);
+    border-radius: 3px;
+    background-color: var(--colonna);
+    color: var(--testo);
+    font-size: 11px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.voce:hover {
+    background-color: var(--bordo);
+}
+
+.voce.fatta {
+    text-decoration: line-through;
+    opacity: 0.6;
 }
 
 #riepilogo table {
@@ -592,9 +683,14 @@ dialog .azioni {
         padding-top: 60px;
     }
 
-    #board {
+    #board,
+    #sotto-board {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .giorno {
+        min-height: 56px;
     }
 
     .tre-colonne {

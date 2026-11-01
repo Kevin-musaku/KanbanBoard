@@ -50,20 +50,34 @@
         </section>
     </main>
 
-    <section id="riepilogo" class="pannello">
-        <h2>Ore per persona</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Persona</th>
-                    <th>Attività</th>
-                    <th>Ore totali</th>
-                    <th>Ore completate</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </section>
+    <div id="sotto-board">
+        <section id="calendario" class="pannello">
+            <div class="testa-calendario">
+                <button type="button" id="mese-precedente" class="secondario" title="Mese precedente">&larr;</button>
+                <h2 id="titolo-mese"></h2>
+                <button type="button" id="mese-successivo" class="secondario" title="Mese successivo">&rarr;</button>
+            </div>
+            <div class="griglia-calendario giorni-settimana">
+                <span>Lun</span><span>Mar</span><span>Mer</span><span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span>
+            </div>
+            <div id="giorni" class="griglia-calendario"></div>
+        </section>
+
+        <section id="riepilogo" class="pannello">
+            <h2>Ore per persona</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Persona</th>
+                        <th>Attività</th>
+                        <th>Ore totali</th>
+                        <th>Ore completate</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </div>
 
     <dialog id="finestra-attivita">
         <h2 id="titolo-finestra">Nuova attività</h2>
