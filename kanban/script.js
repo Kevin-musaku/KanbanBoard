@@ -222,6 +222,7 @@ function paginaBoard() {
     const formPartecipante = document.getElementById("form-partecipante");
     const campoCerca = document.getElementById("cerca");
     const filtroPersona = document.getElementById("filtro-persona");
+    const filtroCategoria = document.getElementById("filtro-categoria");
 
     // L'attività che si sta modificando, oppure null se se ne crea una nuova
     let attivitaInModifica = null;
@@ -375,6 +376,15 @@ function paginaBoard() {
 
     campoCerca.addEventListener("input", mostra);
     filtroPersona.addEventListener("change", mostra);
+    filtroCategoria.addEventListener("change", mostra);
+
+    // Il filtro elenca le categorie in uso, mantenendo quella scelta se esiste ancora
+    function aggiornaFiltroCategoria() {
+        const categorie = [...new Set(progetto.attivita.map(a => a.categoria))];
+        const scelta = filtroCategoria.value;
+        riempiSelect(filtroCategoria, categorie, "Tutte le categorie");
+        filtroCategoria.value = categorie.includes(scelta) ? scelta : "";
+    }
 
     /* --- Trascinamento delle card --- */
 
