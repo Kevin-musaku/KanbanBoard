@@ -568,8 +568,13 @@ function paginaBoard() {
         const testo = campoCerca.value.trim().toLowerCase();
         const persona = filtroPersona.value;
 
+        aggiornaFiltroCategoria();
+        const categoria = filtroCategoria.value;
+
         const visibili = progetto.attivita.filter(a =>
-            a.titolo.toLowerCase().includes(testo) && (!persona || a.persona === persona)
+            a.titolo.toLowerCase().includes(testo) &&
+            (!persona || a.persona === persona) &&
+            (!categoria || a.categoria === categoria)
         );
 
         stati.forEach(stato => {
