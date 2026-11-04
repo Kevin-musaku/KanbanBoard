@@ -552,7 +552,9 @@ function paginaBoard() {
     mostraPartecipanti();
     mostra();
 }
-
+    
+/*DOMContentLoader è un evento che il browser lancia sul document 
+  quando ha finito di leggere l’HTML e ha costruito il DOM, cioè l’albero di tutti gli elementi della pagina*/
 document.addEventListener("DOMContentLoaded", () => {
     preparaTema();
     if (document.getElementById("form-progetto")) {
