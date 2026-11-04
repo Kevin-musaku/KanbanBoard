@@ -12,9 +12,6 @@ const professioni = [
     "Tester",
     "Project manager"
 ];
-
-/* ---------- Tema chiaro / scuro ---------- */
-
 // Lo script è caricato nel <head>: applico subito il tema salvato,
 // così la pagina non lampeggia di bianco prima di diventare scura.
 if (localStorage.getItem("tema") === "scuro") {
@@ -42,8 +39,6 @@ function preparaTema() {
     aggiornaTesto();
 }
 
-/* ---------- Lettura e salvataggio dei dati ---------- */
-
 function leggiProgetti() {
     const progetti = JSON.parse(localStorage.getItem("progetti")) || [];
 
@@ -61,8 +56,6 @@ function leggiProgetti() {
 function salvaProgetti(progetti) {
     localStorage.setItem("progetti", JSON.stringify(progetti));
 }
-
-/* ---------- Funzioni di supporto ---------- */
 
 // Crea un elemento con classe e testo
 function crea(tag, classe = "", testo = "") {
@@ -117,7 +110,6 @@ const oggi = () => {
 // Da "2026-10-28" a "28/10/2026"
 const formattaScadenza = scadenza => scadenza.split("-").reverse().join("/");
 
-/* ---------- Pagina dei progetti (index.html) ---------- */
 
 function paginaProgetti() {
     const form = document.getElementById("form-progetto");
@@ -203,8 +195,6 @@ function paginaProgetti() {
     mostra();
 }
 
-/* ---------- Pagina della board (board.html) ---------- */
-
 function paginaBoard() {
     const id = new URLSearchParams(window.location.search).get("id");
     const progetti = leggiProgetti();
@@ -235,7 +225,7 @@ function paginaBoard() {
     const salva = () => salvaProgetti(progetti);
     const trova = idAttivita => progetto.attivita.find(a => a.id == idAttivita);
 
-    /* --- Intestazione: nome, modifica ed eliminazione del progetto --- */
+    //Intestazione: nome, modifica ed eliminazione del progetto
 
     function mostraIntestazione() {
         document.title = progetto.nome + " - Kanban Board";
@@ -264,8 +254,6 @@ function paginaBoard() {
             window.location.href = "index.html";
         }
     });
-
-    /* --- Partecipanti --- */
 
     function mostraPartecipanti() {
         mostraChips(document.getElementById("partecipanti-progetto"), progetto.partecipanti, rimuoviPartecipante);
@@ -319,8 +307,6 @@ function paginaBoard() {
         }
     });
 
-    /* --- Finestra per creare o modificare un'attività --- */
-
     function apriFinestra(attivita = null) {
         attivitaInModifica = attivita;
         form.reset();
@@ -371,12 +357,8 @@ function paginaBoard() {
         mostra();
     });
 
-    /* --- Ricerca e filtro --- */
-
     campoCerca.addEventListener("input", mostra);
     filtroPersona.addEventListener("change", mostra);
-
-    /* --- Trascinamento delle card --- */
 
     document.querySelectorAll(".lista").forEach(lista => {
         lista.addEventListener("dragover", e => e.preventDefault());
@@ -412,8 +394,6 @@ function paginaBoard() {
         salva();
         mostra();
     }
-
-    /* --- Card delle attività --- */
 
     function creaPulsante(testo, classe, azione) {
         const pulsante = crea("button", classe);
@@ -486,8 +466,6 @@ function paginaBoard() {
         return card;
     }
 
-    /* --- Riepilogo delle ore per persona --- */
-
     function mostraRiepilogo() {
         // Tutti i partecipanti, più eventuali nomi presenti solo nelle attività
         // (compreso "" per le attività senza assegnatario)
@@ -505,8 +483,6 @@ function paginaBoard() {
 
         document.getElementById("riepilogo").hidden = persone.length === 0;
     }
-
-    /* --- Calendario delle scadenze --- */
 
     function mostraCalendario(attivita) {
         const anno = mese.getFullYear();
@@ -551,8 +527,6 @@ function paginaBoard() {
         mese.setMonth(mese.getMonth() + 1);
         mostra();
     });
-
-    /* --- Disegno della board --- */
 
     function mostra() {
         const testo = campoCerca.value.trim().toLowerCase();
